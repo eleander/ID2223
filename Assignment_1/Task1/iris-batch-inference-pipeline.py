@@ -1,11 +1,19 @@
 import os
 import modal
     
-LOCAL=True
+
+# import os
+# import modal
+# stub = modal.Stub()
+# @stub.function(secret=modal.Secret.from_name("HOPSWORKS_API_KEY"))
+# def f():
+#     print(os.environ["HOPSWORKS_API_KEY"])
+
+LOCAL=False
 
 if LOCAL == False:
-   stub = modal.Stub()
-   hopsworks_image = modal.Image.debian_slim().pip_install(["hopsworks","joblib","seaborn","sklearn==1.1.1","dataframe-image"])
+   stub = modal.Stub("iris_batch_inference")
+   hopsworks_image = modal.Image.debian_slim().pip_install(["hopsworks","joblib","seaborn","scikit-learn==1.1.1","dataframe-image"])
    @stub.function(image=hopsworks_image, schedule=modal.Period(days=1), secret=modal.Secret.from_name("HOPSWORKS_API_KEY"))
    def f():
        g()
@@ -35,8 +43,8 @@ def g():
     batch_data = feature_view.get_batch_data()
     
     y_pred = model.predict(batch_data)
-    #print(y_pred)
-    offset = 1
+    print(y_pred)
+    offset = 6
     flower = y_pred[y_pred.size-offset]
     flower_url = "https://raw.githubusercontent.com/featurestoreorg/serverless-ml-course/main/src/01-module/assets/" + flower + ".png"
     print("Flower predicted: " + flower)
@@ -47,7 +55,7 @@ def g():
    
     iris_fg = fs.get_feature_group(name="iris", version=1)
     df = iris_fg.read() 
-    #print(df)
+    print(df)
     label = df.iloc[-offset]["variety"]
     label_url = "https://raw.githubusercontent.com/featurestoreorg/serverless-ml-course/main/src/01-module/assets/" + label + ".png"
     print("Flower actual: " + label)
