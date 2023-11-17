@@ -1,0 +1,6 @@
+*.pkl
+*.csv
+*.png
+*.keras
+wine_generator
+wine_model
