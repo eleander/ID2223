@@ -4,3 +4,4 @@
 *.keras
 wine_generator
 wine_model
+*.pyc
