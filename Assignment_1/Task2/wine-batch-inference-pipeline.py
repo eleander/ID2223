@@ -38,10 +38,7 @@ def g():
     batch_data = batch_data[['alcohol', 'density', 'volatile_acidity', 'chlorides']]
 
     y_pred = model.predict(batch_data)
-    # print(np.unique(y_pred))
-    # find the indexes of unique values from the tail of the array
-    #  array([ 762,  125,    5,    0,   29, 2857]))
-    offset = 127
+    offset = 1
     wine = y_pred[y_pred.size-offset]
     print("Wine predicted: " + str(wine))
     img = Image.new('RGB', (100, 30), color = (73, 109, 137))
@@ -53,8 +50,8 @@ def g():
 
     wine_fg = fs.get_feature_group(name="wine", version=1)
     df = wine_fg.read() 
-    # print last 5 rows of the dataframe
-    print(df.tail(5))
+    # print(df)
+
     label = df.iloc[-offset]["quality"]
     print("Wine actual: " + str(label))
     img = Image.new('RGB', (100, 30), color = (73, 109, 137))
@@ -92,24 +89,22 @@ def g():
     labels = history_df[['label']]
 
     # Only create the confusion matrix when our wine_predictions feature group has examples of all wines
-    wine_count = predictions.value_counts().count()
-    print("Number of different wine quality predictions to date: " + str(wine_count))
+    columns = sorted(list(set(np.unique(labels)) | set(np.unique(predictions))))
+    wine_count = len(columns)
+    print("Number of different wine quality predictions or truth up to date: " + str(wine_count))
+    # We modified the code so that the confusion matrix is generated dynamically depending on the selected labels and predictions
     if wine_count < 2:
+        # Create an empty image to avoid deployment errors in the monitor app
         empty_image = Image.new('RGB', (100, 100), color = (73, 109, 137))
         empty_image.save("./confusion_matrix_wine.png")
     else:     
         results = confusion_matrix(labels, predictions)
-        print(results)
-        columns = sorted(list(set(np.unique(labels)) | set(np.unique(predictions))))
         true_cols = [f'True {col}'  for col in columns]
         pred_cols = [f'Pred {col}' for col in columns]
-        print(true_cols)
-        print(pred_cols)
+
         df_cm = pd.DataFrame(results, true_cols, pred_cols)
-        print(f"DF CM WORKED {df_cm}")
 
         cm = sns.heatmap(df_cm, annot=True)
-        print(f"The heatmap worked")
 
         fig = cm.get_figure()
         fig.savefig("./confusion_matrix_wine.png")

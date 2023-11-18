@@ -1,13 +1,5 @@
 import os
 import modal
-    
-
-# import os
-# import modal
-# stub = modal.Stub()
-# @stub.function(secret=modal.Secret.from_name("HOPSWORKS_API_KEY"))
-# def f():
-#     print(os.environ["HOPSWORKS_API_KEY"])
 
 LOCAL=False
 
@@ -44,7 +36,7 @@ def g():
     
     y_pred = model.predict(batch_data)
     print(y_pred)
-    offset = 6
+    offset = 1
     flower = y_pred[y_pred.size-offset]
     flower_url = "https://raw.githubusercontent.com/featurestoreorg/serverless-ml-course/main/src/01-module/assets/" + flower + ".png"
     print("Flower predicted: " + flower)
