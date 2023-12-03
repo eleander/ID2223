@@ -1,3 +1,2 @@
-common_voice
-combined_dataset
-whisper-base-sv
+common_voice_*
+whisper-base-*
