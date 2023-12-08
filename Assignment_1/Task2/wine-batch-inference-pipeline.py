@@ -97,9 +97,9 @@ def g():
         # Create an empty image to avoid deployment errors in the monitor app
         empty_image = Image.new('RGB', (100, 100), color = (73, 109, 137))
         empty_image.save("./confusion_matrix_wine.png")
-    else:     
+    else:
         results = confusion_matrix(labels, predictions)
-        true_cols = [f'True {col}'  for col in columns]
+        true_cols = [f'True {col}' for col in columns]
         pred_cols = [f'Pred {col}' for col in columns]
 
         df_cm = pd.DataFrame(results, true_cols, pred_cols)

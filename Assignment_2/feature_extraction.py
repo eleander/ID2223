@@ -20,24 +20,6 @@ def create_dataset():
     feature_extractor = WhisperFeatureExtractor.from_pretrained("openai/whisper-base")
     tokenizer = WhisperTokenizer.from_pretrained("openai/whisper-base", language="Spanish", task="transcribe")
 
-    def prepare_dataset_common_voice_11_0(batch): 
-        """Function to preprocess the dataset with the .map method"""
-        # Prepare dataset provided by Mozilla Common Voice 11.0
-        # source: https://huggingface.co/datasets/mozilla-foundation/common_voice_11_0#data-preprocessing-recommended-by-hugging-face
-        transcription = batch["sentence"]
-
-        if transcription.startswith('"') and transcription.endswith('"'):
-            # we can remove trailing quotation marks as they do not affect the transcription
-            transcription = transcription[1:-1]
-
-        if transcription[-1] not in [".", "?", "!"]:
-            # append a full-stop to sentences that do not end in punctuation
-            transcription = transcription + "."
-
-        batch["sentence"] = transcription
-
-        return batch
-
     def prepare_dataset(batch):
         # load and resample audio data from 48 to 16kHz
         audio = batch["audio"]
@@ -49,11 +31,7 @@ def create_dataset():
         batch["labels"] = tokenizer(batch["sentence"]).input_ids
         return batch
 
-    def prepare_combined_dataset(batch):
-        # Chain the two prepare functions
-        return prepare_dataset(prepare_dataset_common_voice_11_0(batch))
-
-    common_voice = common_voice.map(prepare_combined_dataset, remove_columns=common_voice["train"].column_names)
+    common_voice = common_voice.map(prepare_dataset, remove_columns=common_voice["train"].column_names)
     print("Applied the mapping")
 
     return common_voice
