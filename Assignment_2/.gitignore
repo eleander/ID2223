@@ -1,2 +1,5 @@
 common_voice_*
 whisper-base-*
+*.csv
+__pycache__
+*.wav
